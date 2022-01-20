@@ -20,3 +20,10 @@ int main() {
   getJsonStr(&weather);
   return 0;
 }
+
+
+
+
+
+
+
