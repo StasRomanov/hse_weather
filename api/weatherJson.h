@@ -16,6 +16,9 @@
 #define JSON_DAILY_FIELD_LENGTH 8
 // потом может пропишу всем разные
 
+#define JSON_HEADERS_SIZE 20
+#define JSON_VALUES_SIZE 40
+
 typedef struct {
   char string[JSON_SIZE];
 }Json;
@@ -69,10 +72,12 @@ typedef struct {
 //будет добавлена потом
 
 
-void init(Json* weather);
+void init(Json* jsonStr, Position* position, Current* currentWeather,
+          Minutely* weatherMinutely,Hourly* weatherHourly,Daily* weatherDaily);
 void offFileLoader();
 void onFileLoader();
-char getJsonStr(Json* weather);
+int getJsonSize(Json* jsonStr);
+//void jsonParse(Json* jsonStr, Position* position, Current* currentWeather, Minutely* weatherMinutely,Hourly* weatherHourly,Daily* weatherDaily);
 
 
 
