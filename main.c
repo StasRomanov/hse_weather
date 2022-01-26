@@ -15,10 +15,10 @@ int main() {
   printf("___Current___\n");
   printf("dt %ld\nsunrise %ld\nsunset %ld\ntemp %f\nfeels_like %f\npressure %d\nhumidity %d\ndew_point %f\nuvi %d\n"
          "clouds %d\nvisibility %d\nwind_speed %f\nwind_deg %d\nwind_gust %f\nweather_id %d\nweather_main %s\n"
-         "weather_description %s\nweather_icon %s\n", currentWeather.time_sec, currentWeather.sunrise_sec, currentWeather.sunset_sec, currentWeather.temp,
+         "weather_description %s\nweather_icon %s\nsnow %f\n", currentWeather.time_sec, currentWeather.sunrise_sec, currentWeather.sunset_sec, currentWeather.temp,
          currentWeather.feels_like, currentWeather.pressure, currentWeather.humidity, currentWeather.dewPoint, currentWeather.uvi,
          currentWeather.clouds, currentWeather.visibility, currentWeather.wind_speed, currentWeather.wind_deg, currentWeather.wind_gust,
-         currentWeather.weather_id, currentWeather.weather_main, currentWeather.weather_description, currentWeather.weather_icon);
+         currentWeather.weather_id, currentWeather.weather_main, currentWeather.weather_description, currentWeather.weather_icon, currentWeather.snow);
   printf("___Minutely___\n");
   for (int i = 0; i < 61; ++i) {
     printf("index (%d) -> dt %ld precipitation %d\n", i, weatherMinutely.time_sec[i], weatherMinutely.precipitation[i]);

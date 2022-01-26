@@ -14,7 +14,7 @@
 #define JSON_MIN_FIELD_LENGTH 61
 #define JSON_HOURLY_FIELD_LENGTH 48
 #define JSON_DAILY_FIELD_LENGTH 8
-// потом может пропишу всем разные
+// потом может пропишу всем разные (no)
 
 #define JSON_HEADERS_SIZE 20
 #define JSON_VALUES_SIZE 40
@@ -31,7 +31,7 @@ typedef struct {
 
 typedef struct {
   long time_sec, sunrise_sec, sunset_sec;
-  float temp, feels_like, wind_gust, wind_speed, dewPoint;
+  float temp, feels_like, wind_gust, wind_speed, dewPoint, snow;
   int pressure, humidity, uvi, clouds, visibility, wind_deg;
   int weather_id;
   char weather_main[JSON_TXT_FIELD_SIZE], weather_description[JSON_TXT_FIELD_SIZE], weather_icon[JSON_TXT_FIELD_SIZE];

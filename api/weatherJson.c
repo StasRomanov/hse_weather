@@ -11,10 +11,14 @@ char response[JSON_SIZE] = {0};
 char buffer[JSON_SIZE] = {0};
 int jsonSize = 0;
 
-void jsonParse(Json* jsonStr, Position* position, Current* currentWeather,
+void jsonParse(Json* jsonStr, Position* position, Current* weatherCurrent,
                Minutely* weatherMinutely, Hourly* weatherHourly,Daily* weatherDaily);
+void jsonDataCheck(Position* position, Current* weatherCurrent,
+                   Minutely* weatherMinutely, Hourly* weatherHourly,Daily* weatherDaily);
+void jsonPrepareValues(Position* position, Current* weatherCurrent,
+                       Minutely* weatherMinutely,Hourly* weatherHourly,Daily* weatherDaily);
 
-void init(Json* jsonStr, Position* position, Current* currentWeather,
+void init(Json* jsonStr, Position* position, Current* weatherCurrent,
           Minutely* weatherMinutely,Hourly* weatherHourly,Daily* weatherDaily) {
   if (loadJson) {
     system("cd ../ && mkdir storage && cd ./storage && mkdir json");
@@ -28,7 +32,9 @@ void init(Json* jsonStr, Position* position, Current* currentWeather,
   for (int i = 0; response[i] != '\0'; ++i) {
     jsonStr->string[i] = response[i];
   }
-  jsonParse(jsonStr, position, currentWeather, weatherMinutely, weatherHourly, weatherDaily);
+  jsonPrepareValues(position, weatherCurrent, weatherMinutely, weatherHourly, weatherDaily);
+  jsonParse(jsonStr, position, weatherCurrent, weatherMinutely, weatherHourly, weatherDaily);
+  jsonDataCheck(position, weatherCurrent, weatherMinutely, weatherHourly, weatherDaily);
 }
 
 void offFileLoader() {loadJson = false;}
@@ -43,32 +49,43 @@ int getJsonSize(Json* jsonStr) {
   return jsonSize;
 }
 
-void clearValues(Position* position, Current* currentWeather, Minutely* weatherMinutely,Hourly* weatherHourly,Daily* weatherDaily) {
+void clearValues(Position* position, Current* weatherCurrent, Minutely* weatherMinutely,Hourly* weatherHourly,Daily* weatherDaily) {
   position->lat = 0;
   position->lon = 0;
   position->timezone_offset = 0;
   memset(position->timezone, 0, sizeof(position->timezone));
-//  memset(currentWeather->weather_description, 0, sizeof(currentWeather->weather_description));
-//  memset(currentWeather->weather_main, 0, sizeof(currentWeather->weather_main));
-//  memset(currentWeather->weather_icon, 0, sizeof(currentWeather->weather_icon));
-//  currentWeather->temp = 0;
-//  currentWeather->clouds = 0;
-//  currentWeather->dewPoint = 0;
-//  currentWeather->feels_like = 0;
-//  currentWeather->humidity = 0;
-//  currentWeather->pressure = 0;
-//  currentWeather->sunrise_sec = 0;
-//  currentWeather->sunset_sec = 0;
-//  currentWeather->time_sec = 0;
-//  currentWeather->uvi = 0;
-//  currentWeather->visibility = 0;
-//  currentWeather->weather_id = 0;
-//  currentWeather->wind_deg = 0;
-//  currentWeather->wind_gust = 0;
-//  currentWeather->wind_speed = 0;
+//  memset(weatherCurrent->weather_description, 0, sizeof(weatherCurrent->weather_description));
+//  memset(weatherCurrent->weather_main, 0, sizeof(weatherCurrent->weather_main));
+//  memset(weatherCurrent->weather_icon, 0, sizeof(weatherCurrent->weather_icon));
+//  weatherCurrent->temp = 0;
+//  weatherCurrent->clouds = 0;
+//  weatherCurrent->dewPoint = 0;
+//  weatherCurrent->feels_like = 0;
+//  weatherCurrent->humidity = 0;
+//  weatherCurrent->pressure = 0;
+//  weatherCurrent->sunrise_sec = 0;
+//  weatherCurrent->sunset_sec = 0;
+//  weatherCurrent->time_sec = 0;
+//  weatherCurrent->uvi = 0;
+//  weatherCurrent->visibility = 0;
+//  weatherCurrent->weather_id = 0;
+//  weatherCurrent->wind_deg = 0;
+//  weatherCurrent->wind_gust = 0;
+//  weatherCurrent->wind_speed = 0;
 }
 
-void jsonParse(Json* jsonStr, Position* position, Current* currentWeather, Minutely* weatherMinutely,Hourly* weatherHourly,Daily* weatherDaily) {
+void jsonPrepareValues(Position* position, Current* weatherCurrent, Minutely* weatherMinutely,Hourly* weatherHourly,Daily* weatherDaily) {
+  weatherCurrent->snow = -1;
+  weatherCurrent->wind_gust = -1;
+  for (int i = 0; i < JSON_HOURLY_FIELD_LENGTH; ++i) {
+    weatherHourly->wind_gust[i] = -1;
+  }
+  for (int i = 0; i < JSON_DAILY_FIELD_LENGTH; ++i) {
+    weatherDaily->snow[i] = -1;
+  }
+}
+
+void jsonParse(Json* jsonStr, Position* position, Current* weatherCurrent, Minutely* weatherMinutely,Hourly* weatherHourly,Daily* weatherDaily) {
   char keys[4][JSON_HEADERS_SIZE] = {0};
   char values[4][JSON_VALUES_SIZE] = {0};
   int keyWriteIndex = 0, valueWriteIndex = 0;
@@ -90,7 +107,7 @@ void jsonParse(Json* jsonStr, Position* position, Current* currentWeather, Minut
   int cursorPosition = 0;
   int openCurlyBracketsCount = 0;
   int deepLvl = 0;
-//  clearValues(position, currentWeather, weatherMinutely, weatherHourly, weatherDaily);
+//  clearValues(position, weatherCurrent, weatherMinutely, weatherHourly, weatherDaily);
   for (int i = 0; i < getJsonSize(jsonStr) - 3; ++i) {
     buffer[i] = jsonStr->string[i];
     switch (jsonStr->string[i]) {
@@ -185,42 +202,44 @@ void jsonParse(Json* jsonStr, Position* position, Current* currentWeather, Minut
           fillPositionStruct = false; fillCurrentStruct = true;
         }
       } else if (fillCurrentStruct) {
-        if ((currentWeather->time_sec == 0) && (strcmp(keys[deepLvl], "\"dt\"")==0)) {
-          currentWeather->time_sec = strtol(values[deepLvl], NULL, 10);
-        } else if ((currentWeather->sunrise_sec == 0) && (strcmp(keys[deepLvl], "\"sunrise\"")==0)) {
-          currentWeather->sunrise_sec = strtol(values[deepLvl], NULL, 10);
-        } else if ((currentWeather->sunset_sec == 0) && (strcmp(keys[deepLvl], "\"sunset\"")==0)) {
-          currentWeather->sunset_sec = strtol(values[deepLvl], NULL, 10);
-        } else if ((currentWeather->temp == 0) && (strcmp(keys[deepLvl], "\"temp\"")==0)) {
-          currentWeather->temp = strtof(values[deepLvl], NULL);
-        } else if ((currentWeather->feels_like == 0) && (strcmp(keys[deepLvl], "\"feels_like\"")==0)) {
-          currentWeather->feels_like = strtof(values[deepLvl], NULL);
-        } else if ((currentWeather->pressure == 0) && (strcmp(keys[deepLvl], "\"pressure\"")==0)) {
-          currentWeather->pressure = (int)strtol(values[deepLvl], NULL, 10);
-        } else if ((currentWeather->humidity == 0) && (strcmp(keys[deepLvl], "\"humidity\"")==0)) {
-          currentWeather->humidity = (int)strtol(values[deepLvl], NULL, 10);
-        } else if ((currentWeather->dewPoint == 0) && (strcmp(keys[deepLvl], "\"dew_point\"")==0)) {
-          currentWeather->dewPoint = strtof(values[deepLvl], NULL);
-        } else if ((currentWeather->uvi == 0) && (strcmp(keys[deepLvl], "\"uvi\"")==0)) {
-          currentWeather->uvi = (int)strtol(values[deepLvl], NULL, 10);
-        } else if ((currentWeather->clouds == 0) && (strcmp(keys[deepLvl], "\"clouds\"")==0)) {
-          currentWeather->clouds = (int)strtol(values[deepLvl], NULL, 10);
-        } else if ((currentWeather->visibility == 0) && (strcmp(keys[deepLvl], "\"visibility\"")==0)) {
-          currentWeather->visibility = (int)strtol(values[deepLvl], NULL, 10);
-        } else if ((currentWeather->wind_speed == 0) && (strcmp(keys[deepLvl], "\"wind_speed\"")==0)) {
-          currentWeather->wind_speed = strtof(values[deepLvl], NULL);
-        } else if ((currentWeather->wind_deg == 0) && (strcmp(keys[deepLvl], "\"wind_deg\"")==0)) {
-          currentWeather->wind_deg = (int)strtol(values[deepLvl], NULL, 10);
-        } else if ((currentWeather->wind_gust == 0) && (strcmp(keys[deepLvl], "\"wind_gust\"")==0)) {
-          currentWeather->wind_gust = strtof(values[deepLvl], NULL);
-        } else if ((currentWeather->weather_id == 0) && (strcmp(keys[deepLvl], "\"id\"")==0)) {
-          currentWeather->weather_id = (int)strtol(values[deepLvl], NULL, 10);
-        } else if ((currentWeather->weather_main[0] == '\0') && (strcmp(keys[deepLvl], "\"main\"")==0)) {
-          for (int j = dailyCount*JSON_TXT_FIELD_SIZE, k=0; values[deepLvl][k] != '\0'; ++j, ++k) {currentWeather->weather_main[j] = values[deepLvl][k];}
-        } else if ((currentWeather->weather_description[0] == '\0') && (strcmp(keys[deepLvl], "\"description\"")==0)) {
-          for (int j = dailyCount*JSON_TXT_FIELD_SIZE, k=0; values[deepLvl][k] != '\0'; ++j, ++k) {currentWeather->weather_description[j] = values[deepLvl][k];}
-        } else if ((currentWeather->weather_icon[0] == '\0') && (strcmp(keys[deepLvl], "\"icon\"")==0)) {
-          for (int j = dailyCount*JSON_TXT_FIELD_SIZE, k=0; values[deepLvl][k] != '\0'; ++j, ++k) {currentWeather->weather_icon[j] = values[deepLvl][k];}
+        if ((weatherCurrent->time_sec == 0) && (strcmp(keys[deepLvl], "\"dt\"")==0)) {
+          weatherCurrent->time_sec = strtol(values[deepLvl], NULL, 10);
+        } else if ((weatherCurrent->sunrise_sec == 0) && (strcmp(keys[deepLvl], "\"sunrise\"")==0)) {
+          weatherCurrent->sunrise_sec = strtol(values[deepLvl], NULL, 10);
+        } else if ((weatherCurrent->sunset_sec == 0) && (strcmp(keys[deepLvl], "\"sunset\"")==0)) {
+          weatherCurrent->sunset_sec = strtol(values[deepLvl], NULL, 10);
+        } else if ((weatherCurrent->temp == 0) && (strcmp(keys[deepLvl], "\"temp\"")==0)) {
+          weatherCurrent->temp = strtof(values[deepLvl], NULL);
+        } else if ((weatherCurrent->feels_like == 0) && (strcmp(keys[deepLvl], "\"feels_like\"")==0)) {
+          weatherCurrent->feels_like = strtof(values[deepLvl], NULL);
+        } else if ((weatherCurrent->pressure == 0) && (strcmp(keys[deepLvl], "\"pressure\"")==0)) {
+          weatherCurrent->pressure = (int)strtol(values[deepLvl], NULL, 10);
+        } else if ((weatherCurrent->humidity == 0) && (strcmp(keys[deepLvl], "\"humidity\"")==0)) {
+          weatherCurrent->humidity = (int)strtol(values[deepLvl], NULL, 10);
+        } else if ((weatherCurrent->dewPoint == 0) && (strcmp(keys[deepLvl], "\"dew_point\"")==0)) {
+          weatherCurrent->dewPoint = strtof(values[deepLvl], NULL);
+        } else if ((weatherCurrent->uvi == 0) && (strcmp(keys[deepLvl], "\"uvi\"")==0)) {
+          weatherCurrent->uvi = (int)strtol(values[deepLvl], NULL, 10);
+        } else if ((weatherCurrent->clouds == 0) && (strcmp(keys[deepLvl], "\"clouds\"")==0)) {
+          weatherCurrent->clouds = (int)strtol(values[deepLvl], NULL, 10);
+        } else if ((weatherCurrent->visibility == 0) && (strcmp(keys[deepLvl], "\"visibility\"")==0)) {
+          weatherCurrent->visibility = (int)strtol(values[deepLvl], NULL, 10);
+        } else if ((weatherCurrent->wind_speed == 0) && (strcmp(keys[deepLvl], "\"wind_speed\"")==0)) {
+          weatherCurrent->wind_speed = strtof(values[deepLvl], NULL);
+        } else if ((weatherCurrent->wind_deg == 0) && (strcmp(keys[deepLvl], "\"wind_deg\"")==0)) {
+          weatherCurrent->wind_deg = (int)strtol(values[deepLvl], NULL, 10);
+        } else if ((weatherCurrent->wind_gust == -1) && (strcmp(keys[deepLvl], "\"wind_gust\"")==0)) {
+          weatherCurrent->wind_gust = strtof(values[deepLvl], NULL);
+        } else if ((weatherCurrent->snow == -1) && (strcmp(keys[deepLvl], "\"snow\"")==0)) {
+          weatherCurrent->snow = strtof(values[deepLvl], NULL);
+        } else if ((weatherCurrent->weather_id == 0) && (strcmp(keys[deepLvl], "\"id\"")==0)) {
+          weatherCurrent->weather_id = (int)strtol(values[deepLvl], NULL, 10);
+        } else if ((weatherCurrent->weather_main[0] == '\0') && (strcmp(keys[deepLvl], "\"main\"")==0)) {
+          for (int j = dailyCount*JSON_TXT_FIELD_SIZE, k=0; values[deepLvl][k] != '\0'; ++j, ++k) {weatherCurrent->weather_main[j] = values[deepLvl][k];}
+        } else if ((weatherCurrent->weather_description[0] == '\0') && (strcmp(keys[deepLvl], "\"description\"")==0)) {
+          for (int j = dailyCount*JSON_TXT_FIELD_SIZE, k=0; values[deepLvl][k] != '\0'; ++j, ++k) {weatherCurrent->weather_description[j] = values[deepLvl][k];}
+        } else if ((weatherCurrent->weather_icon[0] == '\0') && (strcmp(keys[deepLvl], "\"icon\"")==0)) {
+          for (int j = dailyCount*JSON_TXT_FIELD_SIZE, k=0; values[deepLvl][k] != '\0'; ++j, ++k) {weatherCurrent->weather_icon[j] = values[deepLvl][k];}
           fillCurrentStruct = false;
           fillMinutelyStruct = true;
         }
@@ -257,7 +276,7 @@ void jsonParse(Json* jsonStr, Position* position, Current* currentWeather, Minut
           weatherHourly->wind_speed[hourlyCount] = strtof(values[deepLvl], NULL);
         } else if ((weatherHourly->wind_deg[hourlyCount] == 0) && (strcmp(keys[deepLvl], "\"wind_deg\"")==0)) {
           weatherHourly->wind_deg[hourlyCount] = (int)strtol(values[deepLvl], NULL, 10);
-        } else if ((weatherHourly->wind_gust[hourlyCount] == 0) && (strcmp(keys[deepLvl], "\"wind_gust\"")==0)) {
+        } else if ((weatherHourly->wind_gust[hourlyCount] == -1) && (strcmp(keys[deepLvl], "\"wind_gust\"")==0)) {
           weatherHourly->wind_gust[hourlyCount] = strtof(values[deepLvl], NULL);
         } else if ((weatherHourly->weather_id[hourlyCount] == 0) && (strcmp(keys[deepLvl], "\"id\"")==0)) {
           weatherHourly->weather_id[hourlyCount] = (int)strtol(values[deepLvl], NULL, 10);
@@ -318,7 +337,7 @@ void jsonParse(Json* jsonStr, Position* position, Current* currentWeather, Minut
           weatherDaily->wind_speed[dailyCount] = strtof(values[deepLvl], NULL);
         } else if ((weatherDaily->wind_deg[dailyCount] == 0) && (strcmp(keys[deepLvl], "\"wind_deg\"")==0)) {
           weatherDaily->wind_deg[dailyCount] = (int)strtol(values[deepLvl], NULL, 10);
-        } else if ((weatherDaily->wind_gust[dailyCount] == 0) && (strcmp(keys[deepLvl], "\"wind_gust\"")==0)) {
+        } else if ((weatherDaily->wind_gust[dailyCount] == -1) && (strcmp(keys[deepLvl], "\"wind_gust\"")==0)) {
           weatherDaily->wind_gust[dailyCount] = strtof(values[deepLvl], NULL);
         } else if ((weatherDaily->weather_id[dailyCount] == 0) && (strcmp(keys[deepLvl], "\"id\"")==0)) {
           weatherDaily->weather_id[dailyCount] = (int)strtol(values[deepLvl], NULL, 10);
@@ -332,7 +351,7 @@ void jsonParse(Json* jsonStr, Position* position, Current* currentWeather, Minut
           weatherDaily->clouds[dailyCount] = (int)strtol(values[deepLvl], NULL, 10);
         } else if ((weatherDaily->pop[dailyCount] == 0) && (strcmp(keys[deepLvl], "\"pop\"")==0)) {
           weatherDaily->pop[dailyCount] = strtof(values[deepLvl], NULL);
-        } else if ((weatherDaily->snow[dailyCount] == 0) && (strcmp(keys[deepLvl], "\"snow\"")==0)) {
+        } else if ((weatherDaily->snow[dailyCount] == -1) && (strcmp(keys[deepLvl], "\"snow\"")==0)) {
           weatherDaily->snow[dailyCount] = strtof(values[deepLvl], NULL);
         } else if ((weatherDaily->uvi[dailyCount] == 0) && (strcmp(keys[deepLvl], "\"uvi\"")==0)) {
           weatherDaily->uvi[dailyCount] = strtof(values[deepLvl], NULL);
@@ -347,4 +366,8 @@ void jsonParse(Json* jsonStr, Position* position, Current* currentWeather, Minut
       memset(keys[deepLvl], 0, sizeof(keys[deepLvl]));
     }
   }
+}
+
+void jsonDataCheck() {
+
 }
