@@ -56,11 +56,10 @@ dkms.conf
 ### Example user template
 
 # IntelliJ project files
-.idea
+/**/.idea/
 *.iml
 out
 gen
 
 /cmake-build-debug/
 /**/node_modules/
-/**/.idea/

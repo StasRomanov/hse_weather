@@ -31,8 +31,8 @@ typedef struct {
 
 typedef struct {
   long time_sec, sunrise_sec, sunset_sec;
-  float temp, feels_like, wind_gust;
-  int pressure, humidity, dewPoint, uvi, clouds, visibility, wind_speed, wind_deg;
+  float temp, feels_like, wind_gust, wind_speed, dewPoint;
+  int pressure, humidity, uvi, clouds, visibility, wind_deg;
   int weather_id;
   char weather_main[JSON_TXT_FIELD_SIZE], weather_description[JSON_TXT_FIELD_SIZE], weather_icon[JSON_TXT_FIELD_SIZE];
 }Current;
@@ -44,24 +44,26 @@ typedef struct {
 
 typedef struct {
   long time_sec[JSON_HOURLY_FIELD_LENGTH];
-  float temp[JSON_HOURLY_FIELD_LENGTH], feels_like[JSON_HOURLY_FIELD_LENGTH], wind_gust[JSON_HOURLY_FIELD_LENGTH];
-  int pressure[JSON_HOURLY_FIELD_LENGTH], humidity[JSON_HOURLY_FIELD_LENGTH], dewPoint[JSON_HOURLY_FIELD_LENGTH],
+  float temp[JSON_HOURLY_FIELD_LENGTH], feels_like[JSON_HOURLY_FIELD_LENGTH], wind_gust[JSON_HOURLY_FIELD_LENGTH],
+  pop[JSON_HOURLY_FIELD_LENGTH],dewPoint[JSON_HOURLY_FIELD_LENGTH], wind_speed[JSON_HOURLY_FIELD_LENGTH];
+  int pressure[JSON_HOURLY_FIELD_LENGTH], humidity[JSON_HOURLY_FIELD_LENGTH],
   uvi[JSON_HOURLY_FIELD_LENGTH], clouds[JSON_HOURLY_FIELD_LENGTH], visibility[JSON_HOURLY_FIELD_LENGTH],
-  wind_speed[JSON_HOURLY_FIELD_LENGTH], wind_deg[JSON_HOURLY_FIELD_LENGTH];
+  wind_deg[JSON_HOURLY_FIELD_LENGTH];
   int weather_id[JSON_HOURLY_FIELD_LENGTH];
-  char weather_main[JSON_TXT_FIELD_SIZE*JSON_HOURLY_FIELD_LENGTH], weather_description[JSON_TXT_FIELD_SIZE*JSON_HOURLY_FIELD_LENGTH], weather_icon[JSON_TXT_FIELD_SIZE*JSON_HOURLY_FIELD_LENGTH];
+  char weather_main[JSON_TXT_FIELD_SIZE*JSON_HOURLY_FIELD_LENGTH],
+  weather_description[JSON_TXT_FIELD_SIZE*JSON_HOURLY_FIELD_LENGTH], weather_icon[JSON_TXT_FIELD_SIZE*JSON_HOURLY_FIELD_LENGTH];
 }Hourly;
 
 typedef struct {
-  long time_sec[JSON_DAILY_FIELD_LENGTH], sunrise[JSON_DAILY_FIELD_LENGTH], sunset[JSON_DAILY_FIELD_LENGTH],
-  moonrise[JSON_DAILY_FIELD_LENGTH], moonset[JSON_DAILY_FIELD_LENGTH];
+  long time_sec[JSON_DAILY_FIELD_LENGTH], sunrise_sec[JSON_DAILY_FIELD_LENGTH], sunset_sec[JSON_DAILY_FIELD_LENGTH],
+  moonrise_sec[JSON_DAILY_FIELD_LENGTH], moonset_sec[JSON_DAILY_FIELD_LENGTH];
   float temp_day[JSON_DAILY_FIELD_LENGTH], temp_min[JSON_DAILY_FIELD_LENGTH], temp_max[JSON_DAILY_FIELD_LENGTH],
   temp_night[JSON_DAILY_FIELD_LENGTH], temp_eve[JSON_DAILY_FIELD_LENGTH], temp_morn[JSON_DAILY_FIELD_LENGTH],
   moon_phase[JSON_DAILY_FIELD_LENGTH];
   float feels_like_day[JSON_DAILY_FIELD_LENGTH], feels_like_night[JSON_DAILY_FIELD_LENGTH],
   feels_like_eve[JSON_DAILY_FIELD_LENGTH], feels_like_morn[JSON_DAILY_FIELD_LENGTH];
   int pressure[JSON_DAILY_FIELD_LENGTH], humidity[JSON_DAILY_FIELD_LENGTH], wind_deg[JSON_DAILY_FIELD_LENGTH],
-  clouds, weather_id[JSON_DAILY_FIELD_LENGTH];
+  clouds[JSON_DAILY_FIELD_LENGTH], weather_id[JSON_DAILY_FIELD_LENGTH];
   float dew_point[JSON_DAILY_FIELD_LENGTH], wind_speed[JSON_DAILY_FIELD_LENGTH], wind_gust[JSON_DAILY_FIELD_LENGTH],
   pop[JSON_DAILY_FIELD_LENGTH], snow[JSON_DAILY_FIELD_LENGTH], uvi[JSON_DAILY_FIELD_LENGTH];
   char weather_main[JSON_TXT_FIELD_SIZE*JSON_DAILY_FIELD_LENGTH],
