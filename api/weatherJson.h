@@ -1,6 +1,9 @@
 #ifndef LOADER_WEATHER_JSON_H
 #define LOADER_WEATHER_JSON_H
 
+#define IMG_SIZE_NORMAL "2X"
+#define IMG_SIZE_BIG "4X"
+
 #define JSON_SIZE 25000
 #define JSON_LANG "en"
 #define JSON_LAT "56.317492"
@@ -18,6 +21,7 @@
 
 #define JSON_HEADERS_SIZE 20
 #define JSON_VALUES_SIZE 40
+#define ICONS_ARRAY_LEN 15
 
 typedef struct {
   char string[JSON_SIZE];
@@ -79,6 +83,9 @@ void init(Json* jsonStr, Position* position, Current* currentWeather,
 void offFileLoader();
 void onFileLoader();
 int getJsonSize(Json* jsonStr);
+void loadIconAll();
+void offImgLoader();
+void onImgLoader();
 //void jsonParse(Json* jsonStr, Position* position, Current* currentWeather, Minutely* weatherMinutely,Hourly* weatherHourly,Daily* weatherDaily);
 
 

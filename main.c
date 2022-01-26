@@ -5,7 +5,7 @@
 
 int main() {
   Json json = {}; Position userPosition = {}; Current currentWeather = {};
-  Minutely weatherMinutely ={}; Hourly weatherHourly = {}; Daily weatherDaily = {};
+  Minutely weatherMinutely = {}; Hourly weatherHourly = {}; Daily weatherDaily = {};
   offFileLoader();
   init(&json, &userPosition, &currentWeather, &weatherMinutely, &weatherHourly, &weatherDaily);
 //  printf("%s\n", json.string);
@@ -48,5 +48,6 @@ int main() {
            weatherDaily.weather_id[i], weatherDaily.weather_main, weatherDaily.weather_description, weatherDaily.weather_icon,
            weatherDaily.clouds[i], weatherDaily.pop[i], weatherDaily.snow[i], weatherDaily.uvi[i]);
   }
+  loadIconAll();
   return 0;
 }

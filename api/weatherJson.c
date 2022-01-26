@@ -6,10 +6,13 @@
 
 bool DEBUG_PARSE_FLAG = !true;
 bool loadJson = true;
+bool loadImg = true;
 
 char response[JSON_SIZE] = {0};
 char buffer[JSON_SIZE] = {0};
 int jsonSize = 0;
+char AllIcons[][3] = {{"01n"}, {"02n"}, {"03n"}, {"04d"}, {"04n"}, {"09d"}, {"09n"}, {"10d"},
+                      {"10n"}, {"11d"}, {"11n"}, {"13d"}, {"13n"}, {"50d"}, {"50n"}};
 
 void jsonParse(Json* jsonStr, Position* position, Current* weatherCurrent,
                Minutely* weatherMinutely, Hourly* weatherHourly,Daily* weatherDaily);
@@ -39,6 +42,8 @@ void init(Json* jsonStr, Position* position, Current* weatherCurrent,
 
 void offFileLoader() {loadJson = false;}
 void onFileLoader() {loadJson = true;}
+void offImgLoader() {loadImg = false;}
+void onImgLoader() {loadImg = true;}
 
 int getJsonSize(Json* jsonStr) {
   if (jsonSize == 0) {
@@ -368,6 +373,49 @@ void jsonParse(Json* jsonStr, Position* position, Current* weatherCurrent, Minut
   }
 }
 
-void jsonDataCheck() {
+void fixIcon(char icon[]) {
+  char iconBuffer[JSON_TXT_FIELD_SIZE] = {0};
+  for (int i = 0, k = 0; icon[i] != '\0'; i+=2, ++k) {
+    iconBuffer[k] = icon[i];
+    icon[i] = '\0'; icon[i-1] = '\0';
+  }
+//  memset(icon, 0, sizeof(icon));
+  for (int i = 0; iconBuffer[i] != '\0'; ++i) {
+    icon[i] = iconBuffer[i];
+  }
+}
 
+void jsonDataCheck(Position* position, Current* weatherCurrent, Minutely* weatherMinutely, Hourly* weatherHourly,Daily* weatherDaily) {
+  fixIcon(weatherCurrent->weather_icon);
+  for (int i = 0; i < JSON_HOURLY_FIELD_LENGTH; ++i) {
+    fixIcon(&weatherHourly->weather_icon[JSON_TXT_FIELD_SIZE*i]);
+  }
+  for (int i = 0; i < JSON_DAILY_FIELD_LENGTH; ++i) {
+    fixIcon(&weatherDaily->weather_icon[JSON_TXT_FIELD_SIZE*i]);
+  }
+}
+
+void loadIconAll() {
+  if (!loadJson) {
+    system("cd ../ && mkdir -p ./storage/icons/");
+    char iconSizes[2][3] = {"2x", "4x"};
+    for (int i = 0; i < ICONS_ARRAY_LEN; ++i) {
+      for (int j = 0; j < 2; ++j) {
+        char cmd[90] = "curl ";
+        char loadIconLink[45] = "https://openweathermap.org/img/wn/";
+        strncat(loadIconLink, AllIcons[i], 3);
+        strncat(loadIconLink, "@", 1);
+        strncat(loadIconLink, iconSizes[j], 2);
+        strncat(loadIconLink, ".png", 4);
+        strncat(cmd, loadIconLink, 50);
+        strncat(cmd, " > ../storage/icons/", 20);
+        strncat(cmd, AllIcons[i], 3);
+        strncat(cmd, iconSizes[j], 2);
+        strncat(cmd, ".png", 4);
+        printf("%s\n", loadIconLink);
+        system(cmd);
+        system("clear");
+      }
+    }
+  }
 }
