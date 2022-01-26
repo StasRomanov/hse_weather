@@ -8,7 +8,8 @@ int main() {
   Minutely weatherMinutely = {}; Hourly weatherHourly = {}; Daily weatherDaily = {};
   offFileLoader();
   init(&json, &userPosition, &currentWeather, &weatherMinutely, &weatherHourly, &weatherDaily);
-//  printf("%s\n", json.string);
+  loadIconAll();
+  printf("%s\n", json.string);
   printf("file size %d\n", getJsonSize(&json));
   printf("___Position___\n");
   printf("lat %f\nlon %f\ntimezone %s\ntimezone offset %d\n", userPosition.lat, userPosition.lon, userPosition.timezone, userPosition.timezone_offset);
@@ -48,6 +49,5 @@ int main() {
            weatherDaily.weather_id[i], weatherDaily.weather_main, weatherDaily.weather_description, weatherDaily.weather_icon,
            weatherDaily.clouds[i], weatherDaily.pop[i], weatherDaily.snow[i], weatherDaily.uvi[i]);
   }
-  loadIconAll();
   return 0;
 }
