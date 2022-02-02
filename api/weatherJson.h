@@ -1,9 +1,6 @@
 #ifndef LOADER_WEATHER_JSON_H
 #define LOADER_WEATHER_JSON_H
 
-#define IMG_SIZE_NORMAL "2X"
-#define IMG_SIZE_BIG "4X"
-
 #define JSON_SIZE 25000
 #define JSON_LANG "en"
 #define JSON_LAT "56.317492"

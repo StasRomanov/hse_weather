@@ -7,6 +7,7 @@ int main() {
   Json json = {}; Position userPosition = {}; Current currentWeather = {};
   Minutely weatherMinutely = {}; Hourly weatherHourly = {}; Daily weatherDaily = {};
   offFileLoader();
+  offImgLoader();
   init(&json, &userPosition, &currentWeather, &weatherMinutely, &weatherHourly, &weatherDaily);
   loadIconAll();
   printf("%s\n", json.string);

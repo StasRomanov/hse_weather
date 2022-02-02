@@ -56,7 +56,8 @@ dkms.conf
 ### Example user template
 
 # IntelliJ project files
-/**/.idea/
+.idea/
+.DS_Store
 *.iml
 out
 gen
