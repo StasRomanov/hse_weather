@@ -86,6 +86,7 @@ int getJsonSize(Json* jsonStr);
 void loadIconAll();
 void offImgLoader();
 void onImgLoader();
+void generateStorage();
 //void jsonParse(Json* jsonStr, Position* position, Current* currentWeather, Minutely* weatherMinutely,Hourly* weatherHourly,Daily* weatherDaily);
 
 

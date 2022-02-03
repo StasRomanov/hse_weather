@@ -1,3 +1,4 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -20,6 +21,9 @@ void jsonDataCheck(Position* position, Current* weatherCurrent,
                    Minutely* weatherMinutely, Hourly* weatherHourly,Daily* weatherDaily);
 void jsonPrepareValues(Position* position, Current* weatherCurrent,
                        Minutely* weatherMinutely,Hourly* weatherHourly,Daily* weatherDaily);
+void clearValues(Json* jsonStr, Position* position, Current* weatherCurrent,
+                 Minutely* weatherMinutely, Hourly* weatherHourly,Daily* weatherDaily);
+
 
 void init(Json* jsonStr, Position* position, Current* weatherCurrent,
           Minutely* weatherMinutely,Hourly* weatherHourly,Daily* weatherDaily) {
@@ -29,9 +33,10 @@ void init(Json* jsonStr, Position* position, Current* weatherCurrent,
     system("clear");
   }
   freopen("../storage/json/weatherCurrent.json","r",stdin);
-  gets(response);
+  fgets(response, sizeof(response), stdin);
   system("clear");
   fclose(stdin);
+  clearValues(jsonStr, position, weatherCurrent, weatherMinutely, weatherHourly, weatherDaily);
   for (int i = 0; response[i] != '\0'; ++i) {
     jsonStr->string[i] = response[i];
   }
@@ -54,29 +59,13 @@ int getJsonSize(Json* jsonStr) {
   return jsonSize;
 }
 
-void clearValues(Position* position, Current* weatherCurrent, Minutely* weatherMinutely,Hourly* weatherHourly,Daily* weatherDaily) {
-  position->lat = 0;
-  position->lon = 0;
-  position->timezone_offset = 0;
-  memset(position->timezone, 0, sizeof(position->timezone));
-//  memset(weatherCurrent->weather_description, 0, sizeof(weatherCurrent->weather_description));
-//  memset(weatherCurrent->weather_main, 0, sizeof(weatherCurrent->weather_main));
-//  memset(weatherCurrent->weather_icon, 0, sizeof(weatherCurrent->weather_icon));
-//  weatherCurrent->temp = 0;
-//  weatherCurrent->clouds = 0;
-//  weatherCurrent->dewPoint = 0;
-//  weatherCurrent->feels_like = 0;
-//  weatherCurrent->humidity = 0;
-//  weatherCurrent->pressure = 0;
-//  weatherCurrent->sunrise_sec = 0;
-//  weatherCurrent->sunset_sec = 0;
-//  weatherCurrent->time_sec = 0;
-//  weatherCurrent->uvi = 0;
-//  weatherCurrent->visibility = 0;
-//  weatherCurrent->weather_id = 0;
-//  weatherCurrent->wind_deg = 0;
-//  weatherCurrent->wind_gust = 0;
-//  weatherCurrent->wind_speed = 0;
+void clearValues(Json* jsonStr, Position* position, Current* weatherCurrent, Minutely* weatherMinutely, Hourly* weatherHourly,Daily* weatherDaily) {
+  memset(jsonStr, 0, sizeof(*jsonStr));
+  memset(position, 0, sizeof(*position));
+  memset(weatherCurrent, 0, sizeof(*weatherCurrent));
+  memset(weatherMinutely, 0, sizeof(*weatherMinutely));
+  memset(weatherHourly, 0, sizeof(*weatherHourly));
+  memset(weatherDaily, 0, sizeof(*weatherDaily));
 }
 
 void jsonPrepareValues(Position* position, Current* weatherCurrent, Minutely* weatherMinutely,Hourly* weatherHourly,Daily* weatherDaily) {
@@ -396,8 +385,9 @@ void jsonDataCheck(Position* position, Current* weatherCurrent, Minutely* weathe
 }
 
 void loadIconAll() {
-  if (!loadJson) {
-    system("cd ../ && mkdir -p ./storage/icons/");
+  if (loadImg) {
+//    system("cd ../ && mkdir storage && cd ./storagge && mkdir icons");
+//    system("cd ../ && mkdir -p ./storage/icons/");
     char iconSizes[2][3] = {"2x", "4x"};
     for (int i = 0; i < ICONS_ARRAY_LEN; ++i) {
       for (int j = 0; j < 2; ++j) {
@@ -419,3 +409,10 @@ void loadIconAll() {
     }
   }
 }
+
+void generateStorage() {
+  system("mkdir ../storage");
+  system("cd ../storage && mkdir ./json/");
+  system("cd ../storage && mkdir ./icons/");
+}
+
