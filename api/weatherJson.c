@@ -1,9 +1,12 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
 #include "weatherJson.h"
 
+bool OSX_API = false;
+bool WIN_API = false;
 bool RELEASE_MODE = !true;
 bool DEBUG_PARSE_FLAG = !true;
 bool loadJson = true;
@@ -21,22 +24,28 @@ void jsonDataCheck(Position* position, Current* weatherCurrent,
                    Minutely* weatherMinutely, Hourly* weatherHourly,Daily* weatherDaily);
 void jsonPrepareValues(Position* position, Current* weatherCurrent,
                        Minutely* weatherMinutely,Hourly* weatherHourly,Daily* weatherDaily);
+void clearValues(Json* jsonStr, Position* position, Current* weatherCurrent,
+                 Minutely* weatherMinutely, Hourly* weatherHourly,Daily* weatherDaily);
+
 
 void init(Json* jsonStr, Position* position, Current* weatherCurrent,
           Minutely* weatherMinutely,Hourly* weatherHourly,Daily* weatherDaily) {
+  generateStorage();
   if (loadJson) {
-    system("mkdir -p ~/CLionProjects/loader/storage/json/");
-    system("curl "JSON_LINK" > ~/CLionProjects/loader/storage/json/weatherCurrent.json");
-    system("clear");
+    system("curl "JSON_LINK" > ~/CLionProjects/hse_weather/storage/json/weatherCurrent.json");
+    if (OSX_API && !WIN_API) {
+      system("clear");
+    }
   }
   if (RELEASE_MODE) {
-    system("cp ~/CLionProjects/loader/storage/json/ ~/CLionProjects/loader/cmake-build-debug/");
+    system("cp ~/CLionProjects/hse_weather/storage/json/ ~/CLionProjects/hse_weather/cmake-build-debug/");
     freopen("json/weatherCurrent.json","r",stdin);
   } else {
     freopen("../storage/json/weatherCurrent.json","r",stdin);
   }
-  gets(response);
+  fgets(response, sizeof(response), stdin);
   fclose(stdin);
+  clearValues(jsonStr, position, weatherCurrent, weatherMinutely, weatherHourly, weatherDaily);
   for (int i = 0; response[i] != '\0'; ++i) {
     jsonStr->string[i] = response[i];
   }
@@ -59,6 +68,15 @@ int getJsonSize(Json* jsonStr) {
   return jsonSize;
 }
 
+void clearValues(Json* jsonStr, Position* position, Current* weatherCurrent, Minutely* weatherMinutely, Hourly* weatherHourly,Daily* weatherDaily) {
+  memset(jsonStr, 0, sizeof(*jsonStr));
+  memset(position, 0, sizeof(*position));
+  memset(weatherCurrent, 0, sizeof(*weatherCurrent));
+  memset(weatherMinutely, 0, sizeof(*weatherMinutely));
+  memset(weatherHourly, 0, sizeof(*weatherHourly));
+  memset(weatherDaily, 0, sizeof(*weatherDaily));
+}
+
 void jsonPrepareValues(Position* position, Current* weatherCurrent, Minutely* weatherMinutely,Hourly* weatherHourly,Daily* weatherDaily) {
   weatherCurrent->snow = -1;
   weatherCurrent->wind_gust = -1;
@@ -78,21 +96,17 @@ void jsonParse(Json* jsonStr, Position* position, Current* weatherCurrent, Minut
   bool readKey = false;
   bool readValue = false;
   bool readNumber = false;
-//  -----------------------
   bool fillPositionStruct = true;
   bool fillCurrentStruct = false;
   bool fillMinutelyStruct = false;
   bool fillHourlyStruct = false;
   bool fillDailyStruct = false;
-//  -----------------------
   int minutelyCount = 0;
   int hourlyCount = 0;
   int dailyCount = 0;
-//  -----------------------
   int cursorPosition = 0;
   int openCurlyBracketsCount = 0;
   int deepLvl = 0;
-//  clearValues(position, weatherCurrent, weatherMinutely, weatherHourly, weatherDaily);
   for (int i = 0; i < getJsonSize(jsonStr) - 3; ++i) {
     buffer[i] = jsonStr->string[i];
     switch (jsonStr->string[i]) {
@@ -377,26 +391,46 @@ void jsonDataCheck(Position* position, Current* weatherCurrent, Minutely* weathe
 
 void loadIconAll() {
   if (loadImg) {
-    system("mkdir -p ~/CLionProjects/loader/storage/icons/");
     char iconSizes[2][3] = {"2x", "4x"};
     for (int i = 0; i < ICONS_ARRAY_LEN; ++i) {
       for (int j = 0; j < 2; ++j) {
-        char cmd[100] = "curl ";
+        char cmd[110] = "curl ";
         char loadIconLink[45] = "https://openweathermap.org/img/wn/";
         strncat(loadIconLink, AllIcons[i], 3);
         strncat(loadIconLink, "@", 1);
         strncat(loadIconLink, iconSizes[j], 2);
         strncat(loadIconLink, ".png", 4);
-//        -----------------------------------
         strncat(cmd, loadIconLink, 50);
-        strncat(cmd, " > ~/CLionProjects/loader/storage/icons/", 41);
+        if (OSX_API) {
+          strncat(cmd, " > ~/CLionProjects/hse_weather/storage/icons/", 50);
+        }
+        if (WIN_API) {
+          strncat(cmd, " > ../storage/icons/", 20);
+        }
         strncat(cmd, AllIcons[i], 3);
         strncat(cmd, iconSizes[j], 2);
         strncat(cmd, ".png", 4);
-        printf("%s\n", loadIconLink);
+        printf("%s\n", cmd);
         system(cmd);
-        system("clear");
+        if (OSX_API && !WIN_API) {
+          system("clear");
+        }
       }
     }
   }
+}
+
+void generateStorage() {
+  system("cd ../ && mkdir storage");
+  system("cd ../storage/ && mkdir json");
+  system("cd ../storage/ && mkdir icons");
+}
+
+void set_OSX_Mode() {
+  OSX_API = true;
+  WIN_API = false;
+}
+void set_WINDOWS_Mode() {
+  OSX_API = false;
+  WIN_API = true;
 }

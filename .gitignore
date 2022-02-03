@@ -57,10 +57,15 @@ dkms.conf
 
 # IntelliJ project files
 .idea/
-.DS_Store
+.DS_Store/
 *.iml
 out
 gen
 
 /cmake-build-debug/
 /**/node_modules/
+
+### API & STROAGE FILES
+/storage/
+storage/**/*.png
+#storage/**/*.png
