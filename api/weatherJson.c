@@ -5,6 +5,9 @@
 #include <stdbool.h>
 #include "weatherJson.h"
 
+bool OSX_API = false;
+bool WIN_API = false;
+bool RELEASE_MODE = !true;
 bool DEBUG_PARSE_FLAG = !true;
 bool loadJson = true;
 bool loadImg = true;
@@ -27,14 +30,20 @@ void clearValues(Json* jsonStr, Position* position, Current* weatherCurrent,
 
 void init(Json* jsonStr, Position* position, Current* weatherCurrent,
           Minutely* weatherMinutely,Hourly* weatherHourly,Daily* weatherDaily) {
+  generateStorage();
   if (loadJson) {
-    system("cd ../ && mkdir storage && cd ./storage && mkdir json");
-    system("curl "JSON_LINK" > ../storage/json/weatherCurrent.json");
-    system("clear");
+    system("curl "JSON_LINK" > ~/CLionProjects/hse_weather/storage/json/weatherCurrent.json");
+    if (OSX_API && !WIN_API) {
+      system("clear");
+    }
   }
-  freopen("../storage/json/weatherCurrent.json","r",stdin);
+  if (RELEASE_MODE) {
+    system("cp ~/CLionProjects/hse_weather/storage/json/ ~/CLionProjects/hse_weather/cmake-build-debug/");
+    freopen("json/weatherCurrent.json","r",stdin);
+  } else {
+    freopen("../storage/json/weatherCurrent.json","r",stdin);
+  }
   fgets(response, sizeof(response), stdin);
-  system("clear");
   fclose(stdin);
   clearValues(jsonStr, position, weatherCurrent, weatherMinutely, weatherHourly, weatherDaily);
   for (int i = 0; response[i] != '\0'; ++i) {
@@ -87,21 +96,17 @@ void jsonParse(Json* jsonStr, Position* position, Current* weatherCurrent, Minut
   bool readKey = false;
   bool readValue = false;
   bool readNumber = false;
-//  -----------------------
   bool fillPositionStruct = true;
   bool fillCurrentStruct = false;
   bool fillMinutelyStruct = false;
   bool fillHourlyStruct = false;
   bool fillDailyStruct = false;
-//  -----------------------
   int minutelyCount = 0;
   int hourlyCount = 0;
   int dailyCount = 0;
-//  -----------------------
   int cursorPosition = 0;
   int openCurlyBracketsCount = 0;
   int deepLvl = 0;
-//  clearValues(position, weatherCurrent, weatherMinutely, weatherHourly, weatherDaily);
   for (int i = 0; i < getJsonSize(jsonStr) - 3; ++i) {
     buffer[i] = jsonStr->string[i];
     switch (jsonStr->string[i]) {
@@ -386,33 +391,38 @@ void jsonDataCheck(Position* position, Current* weatherCurrent, Minutely* weathe
 
 void loadIconAll() {
   if (loadImg) {
-//    system("cd ../ && mkdir storage && cd ./storagge && mkdir icons");
-//    system("cd ../ && mkdir -p ./storage/icons/");
     char iconSizes[2][3] = {"2x", "4x"};
     for (int i = 0; i < ICONS_ARRAY_LEN; ++i) {
       for (int j = 0; j < 2; ++j) {
-        char cmd[90] = "curl ";
+        char cmd[110] = "curl ";
         char loadIconLink[45] = "https://openweathermap.org/img/wn/";
         strncat(loadIconLink, AllIcons[i], 3);
         strncat(loadIconLink, "@", 1);
         strncat(loadIconLink, iconSizes[j], 2);
         strncat(loadIconLink, ".png", 4);
         strncat(cmd, loadIconLink, 50);
-        strncat(cmd, " > ../storage/icons/", 20);
+        strncat(cmd, " > ~/CLionProjects/hse_weather/storage/icons/", 50);
+//        if (OSX_API && !WIN_API) {
+//          strncat(cmd, " > ~/CLionProjects/hse_weather/storage/icons/", 41);
+//        } else {
+//          strncat(cmd, " > ../storage/icons/", 20);
+//        }
         strncat(cmd, AllIcons[i], 3);
         strncat(cmd, iconSizes[j], 2);
         strncat(cmd, ".png", 4);
-        printf("%s\n", loadIconLink);
+        printf("%s\n", cmd);
         system(cmd);
-        system("clear");
+        if (OSX_API && !WIN_API) {
+          system("clear");
+        }
       }
     }
   }
 }
 
 void generateStorage() {
-  system("mkdir ../storage");
-  system("cd ../storage && mkdir ./json/");
-  system("cd ../storage && mkdir ./icons/");
+  system("cd ../ && mkdir storage");
+  system("cd ../storage/ && mkdir json");
+  system("cd ../storage/ && mkdir icons");
 }
 
