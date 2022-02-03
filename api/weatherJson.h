@@ -1,6 +1,8 @@
 #ifndef LOADER_WEATHER_JSON_H
 #define LOADER_WEATHER_JSON_H
 
+#include "util/system/settings.h"
+
 #define JSON_SIZE 25000
 #define JSON_LANG "en"
 #define JSON_LAT "56.317492"
@@ -86,7 +88,5 @@ void onImgLoader();
 void generateStorage();
 void clearValues(Json* jsonStr, Position* position, Current* weatherCurrent,
                  Minutely* weatherMinutely, Hourly* weatherHourly,Daily* weatherDaily);
-void set_OSX_Mode();
-void set_WINDOWS_Mode();
 
 #endif //LOADER_WEATHER_JSON_H

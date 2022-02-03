@@ -5,9 +5,6 @@
 #include <stdbool.h>
 #include "weatherJson.h"
 
-bool OSX_API = false;
-bool WIN_API = false;
-bool RELEASE_MODE = !true;
 bool DEBUG_PARSE_FLAG = !true;
 bool loadJson = true;
 bool loadImg = true;
@@ -19,25 +16,22 @@ char AllIcons[][3] = {{"01n"}, {"02n"}, {"03n"}, {"04d"}, {"04n"}, {"09d"}, {"09
                       {"10n"}, {"11d"}, {"11n"}, {"13d"}, {"13n"}, {"50d"}, {"50n"}};
 
 void jsonParse(Json* jsonStr, Position* position, Current* weatherCurrent,
-               Minutely* weatherMinutely, Hourly* weatherHourly,Daily* weatherDaily);
+               Minutely* weatherMinutely, Hourly* weatherHourly, Daily* weatherDaily);
 void jsonDataCheck(Position* position, Current* weatherCurrent,
-                   Minutely* weatherMinutely, Hourly* weatherHourly,Daily* weatherDaily);
+                   Minutely* weatherMinutely, Hourly* weatherHourly, Daily* weatherDaily);
 void jsonPrepareValues(Position* position, Current* weatherCurrent,
-                       Minutely* weatherMinutely,Hourly* weatherHourly,Daily* weatherDaily);
-void clearValues(Json* jsonStr, Position* position, Current* weatherCurrent,
-                 Minutely* weatherMinutely, Hourly* weatherHourly,Daily* weatherDaily);
-
+                       Minutely* weatherMinutely, Hourly* weatherHourly, Daily* weatherDaily);
 
 void init(Json* jsonStr, Position* position, Current* weatherCurrent,
           Minutely* weatherMinutely,Hourly* weatherHourly,Daily* weatherDaily) {
   generateStorage();
   if (loadJson) {
-    system("curl "JSON_LINK" > ~/CLionProjects/hse_weather/storage/json/weatherCurrent.json");
-    if (OSX_API && !WIN_API) {
+    system("curl -s "JSON_LINK" > ~/CLionProjects/hse_weather/storage/json/weatherCurrent.json");
+    if (get_OSX_status() && !get_WINDOWS_status()) {
       system("clear");
     }
   }
-  if (RELEASE_MODE) {
+  if (get_RELEASE_status()) {
     system("cp ~/CLionProjects/hse_weather/storage/json/ ~/CLionProjects/hse_weather/cmake-build-debug/");
     freopen("json/weatherCurrent.json","r",stdin);
   } else {
@@ -394,17 +388,17 @@ void loadIconAll() {
     char iconSizes[2][3] = {"2x", "4x"};
     for (int i = 0; i < ICONS_ARRAY_LEN; ++i) {
       for (int j = 0; j < 2; ++j) {
-        char cmd[110] = "curl ";
+        char cmd[110] = "curl -s ";
         char loadIconLink[45] = "https://openweathermap.org/img/wn/";
         strncat(loadIconLink, AllIcons[i], 3);
         strncat(loadIconLink, "@", 1);
         strncat(loadIconLink, iconSizes[j], 2);
         strncat(loadIconLink, ".png", 4);
         strncat(cmd, loadIconLink, 50);
-        if (OSX_API) {
+        if (get_OSX_status()) {
           strncat(cmd, " > ~/CLionProjects/hse_weather/storage/icons/", 50);
         }
-        if (WIN_API) {
+        if (get_WINDOWS_status()) {
           strncat(cmd, " > ../storage/icons/", 20);
         }
         strncat(cmd, AllIcons[i], 3);
@@ -412,7 +406,7 @@ void loadIconAll() {
         strncat(cmd, ".png", 4);
         printf("%s\n", cmd);
         system(cmd);
-        if (OSX_API && !WIN_API) {
+        if (get_OSX_status() && !get_WINDOWS_status()) {
           system("clear");
         }
       }
@@ -424,13 +418,4 @@ void generateStorage() {
   system("cd ../ && mkdir storage");
   system("cd ../storage/ && mkdir json");
   system("cd ../storage/ && mkdir icons");
-}
-
-void set_OSX_Mode() {
-  OSX_API = true;
-  WIN_API = false;
-}
-void set_WINDOWS_Mode() {
-  OSX_API = false;
-  WIN_API = true;
 }
