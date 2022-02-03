@@ -86,6 +86,7 @@ void onImgLoader();
 void generateStorage();
 void clearValues(Json* jsonStr, Position* position, Current* weatherCurrent,
                  Minutely* weatherMinutely, Hourly* weatherHourly,Daily* weatherDaily);
-
+void set_OSX_Mode();
+void set_WINDOWS_Mode();
 
 #endif //LOADER_WEATHER_JSON_H

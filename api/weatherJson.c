@@ -401,12 +401,12 @@ void loadIconAll() {
         strncat(loadIconLink, iconSizes[j], 2);
         strncat(loadIconLink, ".png", 4);
         strncat(cmd, loadIconLink, 50);
-        strncat(cmd, " > ~/CLionProjects/hse_weather/storage/icons/", 50);
-//        if (OSX_API && !WIN_API) {
-//          strncat(cmd, " > ~/CLionProjects/hse_weather/storage/icons/", 41);
-//        } else {
-//          strncat(cmd, " > ../storage/icons/", 20);
-//        }
+        if (OSX_API) {
+          strncat(cmd, " > ~/CLionProjects/hse_weather/storage/icons/", 50);
+        }
+        if (WIN_API) {
+          strncat(cmd, " > ../storage/icons/", 20);
+        }
         strncat(cmd, AllIcons[i], 3);
         strncat(cmd, iconSizes[j], 2);
         strncat(cmd, ".png", 4);
@@ -426,3 +426,11 @@ void generateStorage() {
   system("cd ../storage/ && mkdir icons");
 }
 
+void set_OSX_Mode() {
+  OSX_API = true;
+  WIN_API = false;
+}
+void set_WINDOWS_Mode() {
+  OSX_API = false;
+  WIN_API = true;
+}
