@@ -394,10 +394,10 @@ void loadIconAll() {
         strncat(loadIconLink, ".png", 4);
         strncat(cmd, loadIconLink, 50);
         if (get_OSX_status()) {
-          strncat(cmd, " > C:\\Users\\%USERNAME%\\AppData\\Local\\HSE-Weather\\storage\\icons\\", 70);
+          strncat(cmd, " > ~/CLionProjects/hse_weather/storage/icons/", 50);
         }
         if (get_WINDOWS_status()) {
-          strncat(cmd, " > ../storage/icons/", 20);
+          strncat(cmd, " > C:\\Users\\%USERNAME%\\AppData\\Local\\HSE-Weather\\storage\\icons\\", 70);
         }
         strncat(cmd, AllIcons[i], 3);
         strncat(cmd, iconSizes[j], 2);
