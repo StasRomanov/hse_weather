@@ -15,14 +15,6 @@ void set_WINDOWS_Mode() {
   WIN_API = true;
 }
 
-void set_RELEASE_mode_ON() {
-  RELEASE_MODE = true;
-}
-
-void set_RELEASE_mode_OFF() {
-  RELEASE_MODE = false;
-}
-
 bool get_OSX_status() {
   return OSX_API ? true : false;
 }

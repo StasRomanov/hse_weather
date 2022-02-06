@@ -1,7 +1,6 @@
 #include "functions.h"
 #include <stdio.h>
 #include "../../api/weatherJson.h"
-#include "strings.h"
 
 void printJsonStr(Json* jsonStr) {
   printf("%s\n", jsonStr->string);

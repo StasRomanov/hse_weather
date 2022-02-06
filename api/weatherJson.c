@@ -26,17 +26,15 @@ void init(Json* jsonStr, Position* position, Current* weatherCurrent,
           Minutely* weatherMinutely,Hourly* weatherHourly,Daily* weatherDaily) {
   generateStorage();
   if (loadJson) {
-    system("curl -s "JSON_LINK" > ~/CLionProjects/hse_weather/storage/json/weatherCurrent.json");
-    if (get_OSX_status() && !get_WINDOWS_status()) {
-      system("clear");
+    if (get_OSX_status()) {
+      system("curl -s "JSON_LINK" > ~/CLionProjects/hse_weather/storage/json/weatherCurrent.json");
+    }
+    if (get_WINDOWS_status()) {
+      system("curl -s "JSON_LINK" > C:\\Users\\%USERNAME%\\AppData\\Local\\HSE-Weather\\storage\\json\\weatherCurrent.json");
+      system("cls");
     }
   }
-  if (get_RELEASE_status()) {
-    system("cp ~/CLionProjects/hse_weather/storage/json/ ~/CLionProjects/hse_weather/cmake-build-debug/");
-    freopen("json/weatherCurrent.json","r",stdin);
-  } else {
-    freopen("../storage/json/weatherCurrent.json","r",stdin);
-  }
+  freopen("../storage/json/weatherCurrent.json","r",stdin);
   fgets(response, sizeof(response), stdin);
   fclose(stdin);
   clearValues(jsonStr, position, weatherCurrent, weatherMinutely, weatherHourly, weatherDaily);
@@ -388,7 +386,7 @@ void loadIconAll() {
     char iconSizes[2][3] = {"2x", "4x"};
     for (int i = 0; i < ICONS_ARRAY_LEN; ++i) {
       for (int j = 0; j < 2; ++j) {
-        char cmd[110] = "curl -s ";
+        char cmd[150] = "curl -s ";
         char loadIconLink[45] = "https://openweathermap.org/img/wn/";
         strncat(loadIconLink, AllIcons[i], 3);
         strncat(loadIconLink, "@", 1);
@@ -396,7 +394,7 @@ void loadIconAll() {
         strncat(loadIconLink, ".png", 4);
         strncat(cmd, loadIconLink, 50);
         if (get_OSX_status()) {
-          strncat(cmd, " > ~/CLionProjects/hse_weather/storage/icons/", 50);
+          strncat(cmd, " > C:\\Users\\%USERNAME%\\AppData\\Local\\HSE-Weather\\storage\\icons\\", 70);
         }
         if (get_WINDOWS_status()) {
           strncat(cmd, " > ../storage/icons/", 20);
@@ -415,7 +413,14 @@ void loadIconAll() {
 }
 
 void generateStorage() {
-  system("cd ../ && mkdir storage");
-  system("cd ../storage/ && mkdir json");
-  system("cd ../storage/ && mkdir icons");
+  if (get_OSX_status()) {
+    system("cd ../ && mkdir -p storage");
+    system("cd ../storage/ && mkdir -p json");
+    system("cd ../storage/ && mkdir -p icons");
+  }
+  if (get_WINDOWS_status()) {
+    system("cd C:\\Users\\%USERNAME%\\AppData\\Local\\ && mkdir HSE-Weather");
+    system("cd C:\\Users\\%USERNAME%\\AppData\\Local\\HSE-Weather\\ && mkdir storage");
+    system("cd C:\\Users\\%USERNAME%\\AppData\\Local\\HSE-Weather\\storage\\ && mkdir json && mkdir icons");
+  }
 }
