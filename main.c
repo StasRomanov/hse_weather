@@ -8,8 +8,25 @@
 int main() {
   Json json; Position userPosition; Current currentWeather;
   Minutely weatherMinutely; Hourly weatherHourly; Daily weatherDaily;
-  set_OSX_Mode();
+  //  choose you OS
+  //-------------
+  //  set_WINDOWS_Mode()
+  //  set_OSX_Mode();
+  //-------------
+  //  choose what you won't load
+  //-------------
+  //  offFileLoader();
+  //  offImgLoader();
+  //-------------
   init(&json, &userPosition, &currentWeather, &weatherMinutely, &weatherHourly, &weatherDaily);
-  loadIconAll();
+  // use this if you want load icons
+  //  loadIconAll();
+  printJsonStr(&json);
+  printJsonStrSize(&json);
+  printLocationInfo(&userPosition);
+  printCurrentWeatherInfo(&currentWeather);
+  printMinutelyWeatherInfo(&weatherMinutely);
+  printHourlyWeatherInfo(&weatherHourly);
+  printDailyWeatherInfo(&weatherDaily);
   return 0;
 }

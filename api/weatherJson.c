@@ -160,7 +160,7 @@ void jsonParse(Json* jsonStr, Position* position, Current* weatherCurrent, Minut
         memset(keys[deepLvl], 0, sizeof(keys[deepLvl]));
         break;
       default:
-        if ((jsonStr->string[i] >= 48 && jsonStr->string[i] <= 57) || (jsonStr->string[i] == 46 && jsonStr->string[i+1] >= 48 && jsonStr->string[i+1] <= 57)) {
+        if ((jsonStr->string[i] >= 48 && jsonStr->string[i] <= 57) || (jsonStr->string[i] == 46 && jsonStr->string[i+1] >= 48 && jsonStr->string[i+1] <= 57) || (jsonStr->string[i] == 45 && jsonStr->string[i+1] >= 48 && jsonStr->string[i+1] <= 57)) {
           readNumber = true;
         }
     }
@@ -310,13 +310,13 @@ void jsonParse(Json* jsonStr, Position* position, Current* weatherCurrent, Minut
           weatherDaily->temp_eve[dailyCount] = strtof(values[deepLvl], NULL);
         } else if ((weatherDaily->temp_morn[dailyCount] == 0) && (strcmp(keys[deepLvl-1], "\"temp\"")==0) && (strcmp(keys[deepLvl], "\"morn\"")==0)) {
           weatherDaily->temp_morn[dailyCount] = strtof(values[deepLvl], NULL);
-        } else if ((weatherDaily->temp_day[dailyCount] == 0) && (strcmp(keys[deepLvl-1], "\"feels_like\"")==0) && (strcmp(keys[deepLvl], "\"day\"")==0)) {
+        } else if ((weatherDaily->feels_like_day[dailyCount] == 0) && (strcmp(keys[deepLvl-1], "\"feels_like\"")==0) && (strcmp(keys[deepLvl], "\"day\"")==0)) {
           weatherDaily->feels_like_day[dailyCount] = strtof(values[deepLvl], NULL);
-        } else if ((weatherDaily->temp_night[dailyCount] == 0) && (strcmp(keys[deepLvl-1], "\"feels_like\"")==0) && (strcmp(keys[deepLvl], "\"night\"")==0)) {
+        } else if ((weatherDaily->feels_like_night[dailyCount] == 0) && (strcmp(keys[deepLvl-1], "\"feels_like\"")==0) && (strcmp(keys[deepLvl], "\"night\"")==0)) {
           weatherDaily->feels_like_night[dailyCount] = strtof(values[deepLvl], NULL);
-        } else if ((weatherDaily->temp_eve[dailyCount] == 0) && (strcmp(keys[deepLvl-1], "\"feels_like\"")==0) && (strcmp(keys[deepLvl], "\"eve\"")==0)) {
+        } else if ((weatherDaily->feels_like_eve[dailyCount] == 0) && (strcmp(keys[deepLvl-1], "\"feels_like\"")==0) && (strcmp(keys[deepLvl], "\"eve\"")==0)) {
           weatherDaily->feels_like_eve[dailyCount] = strtof(values[deepLvl], NULL);
-        } else if ((weatherDaily->temp_morn[dailyCount] == 0) && (strcmp(keys[deepLvl-1], "\"feels_like\"")==0) && (strcmp(keys[deepLvl], "\"morn\"")==0)) {
+        } else if ((weatherDaily->feels_like_morn[dailyCount] == 0) && (strcmp(keys[deepLvl-1], "\"feels_like\"")==0) && (strcmp(keys[deepLvl], "\"morn\"")==0)) {
           weatherDaily->feels_like_morn[dailyCount] = strtof(values[deepLvl], NULL);
         } else if ((weatherDaily->pressure[dailyCount] == 0) && (strcmp(keys[deepLvl], "\"pressure\"")==0)) {
           weatherDaily->pressure[dailyCount] = (int)strtol(values[deepLvl], NULL, 10);
@@ -352,7 +352,7 @@ void jsonParse(Json* jsonStr, Position* position, Current* weatherCurrent, Minut
       }
     }
     if ((jsonStr->string[i+1] == ',' || jsonStr->string[i+1] == '}') && (values[deepLvl][0] != '\0' && keys[deepLvl][0] != '\0')) {
-//      printf("key1: %s key2: %s key3: %s key4: %s \nvalue: %s\n", keys[0], keys[1], keys[2], keys[3], values[deepLvl]);
+//      printf("key1: %s key2: %s key3: %s key4: %s \nvalue: %s | key: %d\n", keys[0], keys[1], keys[2], keys[3], values[deepLvl], deepLvl);
       memset(values[deepLvl], 0, sizeof(values[deepLvl]));
       memset(keys[deepLvl], 0, sizeof(keys[deepLvl]));
     }
