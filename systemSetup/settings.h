@@ -1,6 +1,0 @@
-#ifndef HSE_WEATHER_SETTINGS_H
-#define HSE_WEATHER_SETTINGS_H
-
-#define USER_NAME_WINDOWS stanislav
-
-#endif //HSE_WEATHER_SETTINGS_H
