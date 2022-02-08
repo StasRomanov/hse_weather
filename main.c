@@ -10,7 +10,7 @@ int main() {
   Minutely weatherMinutely; Hourly weatherHourly; Daily weatherDaily;
   //  choose you OS
   //-------------
-  //  set_WINDOWS_Mode()
+    set_WINDOWS_Mode();
   //  set_OSX_Mode();
   //-------------
   //  choose what you won't load
