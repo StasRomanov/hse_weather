@@ -4,20 +4,12 @@
 #include <stdlib.h>
 #include "api/weatherJson.h"
 #include "util/wearherData/functions.h"
+#include "system/setup.h"
 
 int main() {
   Json json; Position userPosition; Current currentWeather;
   Minutely weatherMinutely; Hourly weatherHourly; Daily weatherDaily;
-  //  choose you OS
-  //-------------
-  //  set_WINDOWS_Mode()
-  //  set_OSX_Mode();
-  //-------------
-  //  choose what you won't load
-  //-------------
-  //  offFileLoader();
-  //  offImgLoader();
-  //-------------
+  setupAPI();
   init(&json, &userPosition, &currentWeather, &weatherMinutely, &weatherHourly, &weatherDaily);
   // use this if you want load icons
   //  loadIconAll();

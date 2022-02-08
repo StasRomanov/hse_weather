@@ -30,11 +30,14 @@ void init(Json* jsonStr, Position* position, Current* weatherCurrent,
       system("curl -s "JSON_LINK" > ~/CLionProjects/hse_weather/storage/json/weatherCurrent.json");
     }
     if (get_WINDOWS_status()) {
-      system("curl -s "JSON_LINK" > C:\\Users\\%USERNAME%\\AppData\\Local\\HSE-Weather\\storage\\json\\weatherCurrent.json");
-      system("cls");
+      char *HomePath = getenv("USERPROFILE");
+      char cmd[200] = {0};
+      char filePath[] = "\\AppData\\Local\\HSE-Weather\\storage\\json\\weatherCurrent.json";
+      strncat(cmd, HomePath, 120);
+      strncat(cmd, filePath, 120);
+      freopen(cmd,"r",stdin);
     }
   }
-  freopen("../storage/json/weatherCurrent.json","r",stdin);
   fgets(response, sizeof(response), stdin);
   fclose(stdin);
   clearValues(jsonStr, position, weatherCurrent, weatherMinutely, weatherHourly, weatherDaily);

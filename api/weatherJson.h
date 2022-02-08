@@ -2,6 +2,7 @@
 #define LOADER_WEATHER_JSON_H
 
 #include "util/system/settings.h"
+#include "../systemSetup/settings.h"
 
 #define JSON_SIZE 25000
 #define JSON_LANG "en"
