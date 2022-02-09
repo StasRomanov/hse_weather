@@ -28,6 +28,7 @@ void init(Json* jsonStr, Position* position, Current* weatherCurrent,
   if (loadJson) {
     if (get_OSX_status()) {
       system("curl -s "JSON_LINK" > ~/CLionProjects/hse_weather/storage/json/weatherCurrent.json");
+      freopen("../storage/json/weatherCurrent.json", "r", stdin);
     }
     if (get_WINDOWS_status()) {
       char *HomePath = getenv("USERPROFILE");
@@ -35,7 +36,7 @@ void init(Json* jsonStr, Position* position, Current* weatherCurrent,
       char filePath[] = "\\AppData\\Local\\HSE-Weather\\storage\\json\\weatherCurrent.json";
       strncat(cmd, HomePath, 120);
       strncat(cmd, filePath, 120);
-      freopen(cmd,"r",stdin);
+      freopen(cmd, "r", stdin);
     }
   }
   fgets(response, sizeof(response), stdin);
@@ -102,7 +103,8 @@ void jsonParse(Json* jsonStr, Position* position, Current* weatherCurrent, Minut
   int cursorPosition = 0;
   int openCurlyBracketsCount = 0;
   int deepLvl = 0;
-  for (int i = 0; i < getJsonSize(jsonStr) - 3; ++i) {
+  int jsonSizeSymbols = getJsonSize(jsonStr);
+  for (int i = 0; i < jsonSizeSymbols - 3; ++i) {
     buffer[i] = jsonStr->string[i];
     switch (jsonStr->string[i]) {
       case '{':
@@ -234,8 +236,12 @@ void jsonParse(Json* jsonStr, Position* position, Current* weatherCurrent, Minut
           for (int j = dailyCount*JSON_TXT_FIELD_SIZE, k=0; values[deepLvl][k] != '\0'; ++j, ++k) {weatherCurrent->weather_description[j] = values[deepLvl][k];}
         } else if ((weatherCurrent->weather_icon[0] == '\0') && (strcmp(keys[deepLvl], "\"icon\"")==0)) {
           for (int j = dailyCount*JSON_TXT_FIELD_SIZE, k=0; values[deepLvl][k] != '\0'; ++j, ++k) {weatherCurrent->weather_icon[j] = values[deepLvl][k];}
-          fillCurrentStruct = false;
-          fillMinutelyStruct = true;
+//          fillCurrentStruct = false;
+//          fillMinutelyStruct = true;
+//          server can't send minutely data now
+//          we ignore it
+            fillCurrentStruct = false;
+            fillHourlyStruct = true;
         }
       } else if (fillMinutelyStruct) {
         if ((weatherMinutely->time_sec[minutelyCount] == 0) && (strcmp(keys[deepLvl], "\"dt\"")==0)) {
@@ -243,6 +249,7 @@ void jsonParse(Json* jsonStr, Position* position, Current* weatherCurrent, Minut
         } else if ((weatherMinutely->precipitation[minutelyCount] == 0) && (strcmp(keys[deepLvl], "\"precipitation\"")==0)) {
           weatherMinutely->precipitation[minutelyCount] = (int)strtol(values[deepLvl], NULL, 10);
           minutelyCount++;
+          printf("min: %d\n", minutelyCount);
         } if (minutelyCount == 61) {
           fillMinutelyStruct = false;
           fillHourlyStruct = true;

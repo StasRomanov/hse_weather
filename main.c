@@ -12,7 +12,7 @@ int main() {
   setupAPI();
   init(&json, &userPosition, &currentWeather, &weatherMinutely, &weatherHourly, &weatherDaily);
   // use this if you want load icons
-  //  loadIconAll();
+//  loadIconAll();
   printJsonStr(&json);
   printJsonStrSize(&json);
   printLocationInfo(&userPosition);
