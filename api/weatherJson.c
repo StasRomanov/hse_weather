@@ -33,9 +33,12 @@ void init(Json* jsonStr, Position* position, Current* weatherCurrent,
     if (get_WINDOWS_status()) {
       char *HomePath = getenv("USERPROFILE");
       char cmd[200] = {0};
+      char curlLoadCmd[400] = "curl -s "JSON_LINK" > ";
       char filePath[] = "\\AppData\\Local\\HSE-Weather\\storage\\json\\weatherCurrent.json";
       strncat(cmd, HomePath, 120);
       strncat(cmd, filePath, 120);
+      strncat(curlLoadCmd, cmd, 120);
+      system(curlLoadCmd);
       freopen(cmd, "r", stdin);
     }
   }
