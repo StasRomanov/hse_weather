@@ -10,7 +10,7 @@
 storage/**/*.png
 
 # System setup
-/system/setup.h
+/system/
 
 ### C template
 # Prerequisites
