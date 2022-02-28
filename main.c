@@ -13,6 +13,7 @@ int main() {
   init(&json, &userPosition, &currentWeather, &weatherMinutely, &weatherHourly, &weatherDaily);
   // use this if you want load icons
 //  loadIconAll();
+  printJsonLink();
   printJsonStr(&json);
   printJsonStrSize(&json);
   printLocationInfo(&userPosition);

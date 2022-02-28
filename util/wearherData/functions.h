@@ -4,6 +4,7 @@
 
 #include "../../api/weatherJson.h"
 
+void printJsonLink();
 void printJsonStr(Json* jsonStr);
 void printJsonStrSize(Json* jsonStr);
 void printLocationInfo(Position* userPosition);

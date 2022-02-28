@@ -2,6 +2,10 @@
 #include <stdio.h>
 #include "../../api/weatherJson.h"
 
+void printJsonLink() {
+  printf("%s\n", JSON_LINK);
+}
+
 void printJsonStr(Json* jsonStr) {
   printf("%s\n", jsonStr->string);
 }
